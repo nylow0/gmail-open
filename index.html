@@ -3,6 +3,7 @@
   Opens one Gmail message from a digest link: launches the Gmail app on Android (inbox; the app refuses
   every mail.google.com link, tested on a Samsung phone), the exact email on Gmail web elsewhere.
   Link format: https://nylow0.github.io/gmail-open/#a=<account email>&m=<X-GM-MSGID in hex>
+  or .../gmail-open/#inbox to just open Gmail (Android can't open one exact email in the app).
   Security model (tested in src/open-page.test.ts):
   - Data rides in the #fragment, which browsers never send to the server.
   - Only ever navigates to mail.google.com (or the Gmail app); strict input checks, so it is not an open redirect.
@@ -13,7 +14,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-b22a+KgiK2Y5vqQAW7QNSrgav/jolbHQjm4fR+EVElg='; style-src 'sha256-GaWky7LMzxPqvAXimBEcMhi497IDYkdaWdu4CEhieA0='; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-3IyvUwdjczAEhiLRd37c0wH9OmdShcdy7iszZkWip5I='; style-src 'sha256-GaWky7LMzxPqvAXimBEcMhi497IDYkdaWdu4CEhieA0='; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
 <title>Open in Gmail</title>
@@ -26,22 +27,28 @@
 <p><a id="web" class="quiet" hidden>Open in browser instead</a></p>
 </main>
 <script>(() => {
-  const params = new URLSearchParams(location.hash.slice(1));
+  const hash = location.hash;
+  const params = new URLSearchParams(hash.slice(1));
   // Remove the email address from the address bar and history before going anywhere.
   history.replaceState(null, "", location.pathname);
 
+  // "#inbox" opens Gmail itself; "#a=…&m=…" opens one email.
+  const inbox = hash === "#inbox";
   const account = params.get("a") ?? "";
   const id = params.get("m") ?? "";
   const valid =
-    [...params.keys()].length === 2 &&
-    /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9-]{1,63}){0,4}\.[A-Za-z]{2,24}$/.test(account) &&
-    /^[0-9a-f]{1,16}$/.test(id);
+    inbox ||
+    ([...params.keys()].length === 2 &&
+      /^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(\.[A-Za-z0-9-]{1,63}){0,4}\.[A-Za-z]{2,24}$/.test(account) &&
+      /^[0-9a-f]{1,16}$/.test(id));
   if (!valid) {
     document.getElementById("status").textContent = "This link is not valid.";
     return;
   }
 
-  const web = "https://mail.google.com/mail/?authuser=" + encodeURIComponent(account) + "#all/" + id;
+  const web = inbox
+    ? "https://mail.google.com/mail/"
+    : "https://mail.google.com/mail/?authuser=" + encodeURIComponent(account) + "#all/" + id;
   // Android: launch the Gmail app itself, like tapping its icon. The app refuses every
   // mail.google.com intent, and a browser_fallback_url would silently land in Gmail web instead.
   const android = /Android/i.test(navigator.userAgent);

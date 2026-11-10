@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ieyizf7ExpVYIanU3ufLTK+2vx8TQO00OJqjOKs9AFw='; style-src 'sha256-ESJO02Sl87PGhkwzrqN3C5djCVoeCHiHrkPwxl0oP4w='; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Gmail exact-email test</title>
+<style>body{margin:0;padding:16px;background:#111;color:#ddd;font:16px system-ui,sans-serif}a{display:block;margin:14px 0;padding:14px;border-radius:12px;background:#222;color:#8ab4f8;font-weight:600;text-decoration:none}</style>
+</head>
+<body>
+<h2>Exact email test (temporary)</h2>
+<p id="status">Tap each one, come back, tap the next. Note which numbers open THIS email in the Gmail app.</p>
+<main id="list"></main>
+<script>(() => {
+  const params = new URLSearchParams(location.hash.slice(1));
+  history.replaceState(null, "", location.pathname);
+  const account = params.get("a") ?? "";
+  const id = params.get("m") ?? "";
+  if (!/^[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,253}$/.test(account) || !/^[0-9a-f]{1,16}$/.test(id)) {
+    document.getElementById("status").textContent = "This link is not valid.";
+    return;
+  }
+  const a = encodeURIComponent(account);
+  const web = "https://mail.google.com/mail/?authuser=" + a + "#all/" + id;
+  const gm = "#Intent;scheme=https;package=com.google.android.gm;end";
+  const variants = [
+    ["1. gmail.app.goo.gl link=web (intent)", "intent://gmail.app.goo.gl/?link=" + encodeURIComponent(web) + gm],
+    ["2. gmail.app.goo.gl link=u/0 inbox (intent)", "intent://gmail.app.goo.gl/?link=" + encodeURIComponent("https://mail.google.com/mail/u/0/#inbox/" + id) + gm],
+    ["3. gmail.app.goo.gl link=web (plain https)", "https://gmail.app.goo.gl/?link=" + encodeURIComponent(web)],
+    ["4. mail.google.com mobile view (intent)", "intent://mail.google.com/mail/mu/mp/?authuser=" + a + "#cv/Inbox/" + id + gm],
+    ["5. mail.google.com u/0 inbox (intent)", "intent://mail.google.com/mail/u/0/#inbox/" + id + gm],
+  ];
+  const list = document.getElementById("list");
+  for (const [label, href] of variants) {
+    const link = document.createElement("a");
+    link.textContent = label;
+    link.href = href;
+    list.append(link);
+  }
+})();</script>
+</body>
+</html>

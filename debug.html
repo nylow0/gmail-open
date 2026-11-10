@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'">
+<meta name="robots" content="noindex, nofollow">
+<title>Gmail app test</title>
+</head>
+<body>
+<h2>Gmail app test (temporary)</h2>
+<p>Tap each one. Note which numbers open the Gmail APP. None has a browser fallback, so "nothing happens" = failed.</p>
+<h2><a href="intent://mail.google.com/mail/#Intent;scheme=https;package=com.google.android.gm;end">1. https mail.google.com/mail/</a></h2>
+<h2><a href="intent://mail.google.com/mail/u/0/#Intent;scheme=https;package=com.google.android.gm;end">2. https mail.google.com/mail/u/0/</a></h2>
+<h2><a href="intent://mail.google.com/#Intent;scheme=https;package=com.google.android.gm;end">3. https mail.google.com/</a></h2>
+<h2><a href="intent://gmail.app.goo.gl/#Intent;scheme=https;package=com.google.android.gm;end">4. https gmail.app.goo.gl</a></h2>
+<h2><a href="intent:///#Intent;scheme=googlegmail;package=com.google.android.gm;end">5. googlegmail:///</a></h2>
+<h2><a href="intent://co#Intent;scheme=googlegmail;package=com.google.android.gm;end">6. googlegmail://co</a></h2>
+<h2><a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.google.android.gm;end">7. launch Gmail (main screen)</a></h2>
+<h2><a href="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end">8. default email app</a></h2>
+</body>
+</html>
